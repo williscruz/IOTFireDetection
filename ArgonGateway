@@ -1,0 +1,58 @@
+Argon Gateway:
+/*
+ * Project ArgonGateway_Main
+ * Description: 
+ * This is the gateway for the mesh network. 
+ * The buzzer will buzz if the temperature is greater than 30 oC
+ * Author: Joycephine, Willis, Cruz
+ * Date: 5/17/2020
+ */
+
+// Buzzer Declaration
+int piezo = D3;
+int XenonHumid,XenonTemp;
+
+// Buzzer Handler - Thermocouple Sensor
+void temp_handler(const char *event, const char *data){
+   String new_data = String(data);
+    int data_int = new_data.toInt();
+    XenonTemp=data_int;
+    if(data_int > 30){
+        tone(piezo, 1000, 3000);  
+    }
+    else{
+        noTone(piezo);   
+    }
+}
+
+// Buzzer Handler - DHT11 Temperature Sensor
+void humid_handler(const char *event1, const char *data1){
+    String new_data = String(data1);
+    int data_int = new_data.toInt();
+    XenonHumid=data_int;
+    if(data_int > 30){
+        tone(piezo, 2000, 3000);  
+    }
+    else{
+        noTone(piezo);   
+    }
+}
+
+void setup() {
+    pinMode(piezo,OUTPUT); //Buzzer Output
+    Mesh.subscribe("Thermocouple Sensor Readings",temp_handler);
+    Mesh.subscribe("DHT11 Sensor Readings", humid_handler);
+    Serial.begin(9600);
+}
+
+void loop() {
+    Particle.publish("Thermocouple Sensor Readings", String (XenonTemp),PUBLIC);
+    Particle.publish("DHT11 Sensor Readings", String (XenonHumid),PUBLIC);
+    Serial.print("Thermocouple Temperature (oC): ");
+    Serial.println(XenonTemp);
+    Serial.print("DHT11 Temperature (oC): ");
+    Serial.println(XenonHumid);
+    delay(1000);
+}
+
+
