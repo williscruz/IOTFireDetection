@@ -1,0 +1,40 @@
+Xenon - MAX6675 ThermoCouple Sensor:
+/*
+ * Project XenonNode1_Thermocouple
+ * Description: 
+ * Retrieve temperature in Celsius to publish to Particle Cloud
+ * to trigger a buzzer in the same mesh network
+ * Author: Joycephine, Willis, Barry
+ * Date: 5/17/2020
+ */
+// Imported Libraries
+#include "Adafruit_MAX6675.h"
+#include "math.h"
+
+// Pin Name Definitions
+int thermoCLK = D3;
+int thermoCS = D2;
+int thermoDO = D4;
+
+// Object Declarations
+Adafruit_MAX6675 thermocouple(thermoCLK, thermoCS, thermoDO);
+
+
+// setup() runs once, when the device is first turned on.
+void setup() {
+  // Put initialization like pinMode and begin functions here.
+  Serial.begin(9600);
+}
+
+// loop() runs over and over again, as quickly as it can execute.
+void loop() {
+  // The core of your code will likely live here.
+  // Get degrees in Celsius
+  double c = thermocouple.readCelsius();
+
+  Serial.print("ThermoCouple Temperature (oC): ");
+  Serial.println(c);
+
+  // Publish to Argon Gateway
+  Mesh.publish("Thermocouple Sensor Readings", (String) c);
+}
